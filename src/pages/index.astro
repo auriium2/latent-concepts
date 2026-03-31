@@ -1,26 +1,72 @@
 ---
-import BaseLayout from '@layouts/BaseLayout.astro';
-import HeroTitle from '@components/HeroTitle.astro';
-import Description from '@components/Description.astro';
-import SignUpForm from '@components/SignUpForm.astro';
+import "@styles/global.css"
+import NervJepa from "@components/NervJepa.astro"
 ---
 
-<BaseLayout>
-	<main>
-		<HeroTitle />
-		<Description />
-		<SignUpForm />
-	</main>
-</BaseLayout>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Coming Soon</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Fira+Code:wght@400;500&family=Barlow+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <canvas id="jepa"></canvas>
 
-<style>
-	main {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		width: min(80ch, 99% - 1.25rem);
-		text-align: center;
-		margin: 0 auto;
-	}
-</style>
+    <NervJepa />
+
+    <div class="coming-soon">
+      <h1>LATENT CONCEPTS</h1>
+      <p class="subtitle">coming soon</p>
+    </div>
+
+    <script is:inline src="/canvas.js"></script>
+
+    <style>
+      canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        opacity: 0.8;
+      }
+
+      .coming-soon {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+        gap: 1rem;
+      }
+
+      .coming-soon h1 {
+        font-family: 'Oswald', 'Arial Narrow', system-ui, sans-serif;
+        font-size: clamp(3rem, 8vw, 7rem);
+        font-weight: 700;
+        letter-spacing: 0.25em;
+        color: rgba(255, 255, 255, 0.85);
+        text-shadow: 0 0 40px rgba(255, 153, 0, 0.15);
+      }
+
+      .subtitle {
+        font-family: "Inter Variable", "Inter", -apple-system, sans-serif;
+        font-size: clamp(0.9rem, 2vw, 1.3rem);
+        font-weight: 300;
+        letter-spacing: 0.45em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.45);
+      }
+    </style>
+  </body>
+</html>
