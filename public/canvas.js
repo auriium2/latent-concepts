@@ -462,7 +462,7 @@
 
         // === V-JEPA (centered) ===
         var diagramScale = Math.min(w / 1050, h / 900, 0.75);
-        drawJepaDiagram(0.5, diagramScale, J, "train", "S I M P L E _ B E G I N N I N G S");
+        drawJepaDiagram(0.5, diagramScale, J, "train", "H U M B L E _ B E G I N N I N G S");
       }
 
       let time = 0;
