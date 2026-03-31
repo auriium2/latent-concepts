@@ -12,12 +12,8 @@
 
       // EVA colors
       const EVA_ORANGE = "rgb(255, 120, 0)";
-      const EVA_ORANGE_DIM = "rgba(255, 120, 0, 0.5)";
-      const EVA_ORANGE_GLOW = "rgba(255, 120, 0, 0.15)";
       const EVA_RED = "rgb(220, 40, 40)";
       const EVA_GREEN = "rgb(0, 200, 80)";
-      const EVA_BLUE = "rgb(60, 160, 255)";
-      const EVA_BLUE_DIM = "rgba(60, 160, 255, 0.4)";
 
       // Layout (relative to center) — symmetric, centered
       const ROW_TOP = -130;
@@ -152,86 +148,6 @@
         ctx.restore();
       }
 
-      // Experiment grid with ghost layers + letter animation (for standalone use)
-      function drawExperimentGrid(x, y, gw, gh, color, dimColor, t, maskRatio, gridSize = 6) {
-        const gridLayers = 4;
-        const ghostLayers = 5;
-        const layers = gridLayers + ghostLayers;
-        const cols = gridSize;
-        const gridRows = gridSize;
-        const cellW = gw / cols;
-        const cellH = gh / gridRows;
-        const layerOffsetX = -14;
-        const layerOffsetY = -14;
-        const f = flk(t, x * 0.02);
-
-        ctx.save();
-        const midX = x + gw / 2;
-        const midY = y + gh / 2;
-        ctx.translate(midX, midY);
-        ctx.rotate(-0.15);
-        ctx.translate(-midX, -midY);
-
-        const letters = {
-          L: [[1,0,0,0,0,0],[1,0,0,0,0,0],[1,0,0,0,0,0],[1,0,0,0,0,0],[1,0,0,0,0,0],[1,1,1,1,1,0]],
-          A: [[0,0,1,1,0,0],[0,1,0,0,1,0],[1,0,0,0,0,1],[1,1,1,1,1,1],[1,0,0,0,0,1],[1,0,0,0,0,1]],
-          T: [[1,1,1,1,1,1],[0,0,1,1,0,0],[0,0,1,1,0,0],[0,0,1,1,0,0],[0,0,1,1,0,0],[0,0,1,1,0,0]],
-          E: [[1,1,1,1,1,1],[1,0,0,0,0,0],[1,1,1,1,0,0],[1,0,0,0,0,0],[1,0,0,0,0,0],[1,1,1,1,1,1]],
-          N: [[1,0,0,0,0,1],[1,1,0,0,0,1],[1,0,1,0,0,1],[1,0,0,1,0,1],[1,0,0,0,1,1],[1,0,0,0,0,1]],
-          C: [[0,1,1,1,1,0],[1,0,0,0,0,0],[1,0,0,0,0,0],[1,0,0,0,0,0],[1,0,0,0,0,0],[0,1,1,1,1,0]],
-          O: [[0,1,1,1,1,0],[1,0,0,0,0,1],[1,0,0,0,0,1],[1,0,0,0,0,1],[1,0,0,0,0,1],[0,1,1,1,1,0]],
-          P: [[1,1,1,1,1,0],[1,0,0,0,0,1],[1,1,1,1,1,0],[1,0,0,0,0,0],[1,0,0,0,0,0],[1,0,0,0,0,0]],
-          S: [[0,1,1,1,1,1],[1,0,0,0,0,0],[0,1,1,1,1,0],[0,0,0,0,0,1],[0,0,0,0,0,1],[1,1,1,1,1,0]],
-          _: [[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0]],
-        };
-        const sequence = "LATENT___CONCEPTS___";
-        const frame = Math.floor(t * 0.7);
-        const frameIdx = frame % sequence.length;
-        const ch = sequence[frameIdx];
-        const currentLetter = letters[ch];
-
-        for (let l = 0; l < layers; l++) {
-          const lx = x + l * layerOffsetX;
-          const ly = y + l * layerOffsetY;
-          const layerAlpha = l < gridLayers
-            ? f * (0.7 + (gridLayers - 1 - l) * 0.15)
-            : f * (0.7 - (l - gridLayers) * 0.07);
-          ctx.globalAlpha = layerAlpha;
-
-          if (l >= gridLayers) {
-            ctx.strokeStyle = color;
-            ctx.lineWidth = 0.5;
-            ctx.strokeRect(lx, ly, gw, gh);
-          } else {
-            for (let r = 0; r < gridRows; r++) {
-              for (let c = 0; c < cols; c++) {
-                const cx = lx + c * cellW;
-                const cy = ly + r * cellH;
-                const isLetter = ch !== '_';
-                const isLetterCell = isLetter && currentLetter && currentLetter[r]?.[c] === 1;
-
-                let isMasked;
-                if (isLetter) {
-                  isMasked = !isLetterCell;
-                } else {
-                  const seed = Math.sin(r * 127.1 + c * 311.7 + l * 74.3 + frame * 43.7) * 43758.5453;
-                  const hash = seed - Math.floor(seed);
-                  isMasked = hash < maskRatio;
-                }
-
-                if (l === 0) {
-                  ctx.fillStyle = isMasked ? "rgba(255,255,255,0.05)" : dimColor;
-                  ctx.fillRect(cx + 0.5, cy + 0.5, cellW - 1, cellH - 1);
-                }
-                ctx.strokeStyle = color;
-                ctx.lineWidth = 0.5;
-                ctx.strokeRect(cx + 0.5, cy + 0.5, cellW - 1, cellH - 1);
-              }
-            }
-          }
-        }
-        ctx.restore();
-      }
 
       // Stacked frames (input video) — more opaque
       function drawFrameStack(x, y, fw, fh, color, t, bright) {
@@ -319,14 +235,6 @@
       function drawJepa(t) {
         ctx.clearRect(0, 0, w, h);
 
-        /* === Token grid experiment (hidden) ===
-        ctx.save();
-        ctx.translate(w * 0.5, h * 0.5);
-        const flicker = 0.85 + Math.random() * 0.1 + Math.sin(t * 30) * 0.03;
-        ctx.globalAlpha = flicker;
-        drawExperimentGrid(-175, -210, 350, 420, EVA_BLUE, EVA_BLUE_DIM, t, 0.7, 8);
-        ctx.restore();
-        */
 
         // Reset arrow index for sequential pulsing
 
@@ -546,68 +454,6 @@
             // EMA
             var emaX = L.ctxEncoder.x + L.ctxEncoder.w / 2;
             drawArrow(emaX, L.ctxEncoder.y + L.ctxEncoder.h + gap, emaX, L.tgtEncoder.y - gap, EVA_ORANGE, t, true);
-
-          } else if (mode === "probe") {
-            // === Frozen encoder → probe evaluation ===
-            // Single row: frames → frozen encoder → representations → probe → output
-            var midY = 0; // centered vertically
-
-            // Frame stack (input video)
-            drawFrameStack(L.ctxFrames.x, -60, L.ctxFrames.w, ROW_H, EVA_ORANGE, t, true);
-
-            // Frozen encoder (with ice/lock indicator)
-            var encX = L.ctxEncoder.x;
-            var encY = midY - ENC_SIZE / 2;
-            drawNervPanel(encX, encY, ENC_SIZE, ENC_SIZE, "#4488AA", "E\u03B8", false);
-
-            // "FROZEN" label below encoder
-            ctx.save();
-            ctx.globalAlpha = 0.5 + Math.sin(t * 2) * 0.15;
-            ctx.fillStyle = "#4488AA";
-            ctx.font = "bold 8px 'Oswald', monospace";
-            ctx.textAlign = "center";
-            ctx.fillText("FROZEN", encX + ENC_SIZE / 2, encY + ENC_SIZE + 12);
-            // Lock icon (simple padlock shape)
-            var lx = encX + ENC_SIZE / 2;
-            var ly = encY - 10;
-            ctx.strokeStyle = "#4488AA";
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.arc(lx, ly - 4, 5, Math.PI, 0);
-            ctx.stroke();
-            ctx.strokeRect(lx - 5, ly, 10, 8);
-            ctx.restore();
-
-            // Representations (token grid, single)
-            drawIsoTokenGrid(L.ctxTokens.x, -60, L.ctxTokens.w, ROW_H, "rgb(0, 246, 255)", "rgba(0, 246, 255, 0.35)", t, 0.15);
-
-            // Probe head
-            var probeX = L.predictor.x;
-            var probeY = midY - ENC_SIZE / 2;
-            drawNervPanel(probeX, probeY, ENC_SIZE, ENC_SIZE, "#FF00FF", "f\u03C8", false);
-
-            // Output / task label
-            var outX = L.loss.x;
-            var outY = midY - ENC_SIZE / 2;
-            drawNervPanel(outX, outY, ENC_SIZE, ENC_SIZE, EVA_GREEN, "\u0177", false);
-
-            // Labels (same style as frozen)
-            ctx.save();
-            ctx.globalAlpha = 0.5 + Math.sin(t * 2) * 0.15;
-            ctx.font = "bold 8px 'Oswald', monospace";
-            ctx.textAlign = "center";
-            ctx.fillStyle = "#FF00FF";
-            ctx.fillText("PROBE", probeX + ENC_SIZE / 2, probeY + ENC_SIZE + 12);
-            ctx.fillStyle = EVA_GREEN;
-            ctx.fillText("OUTPUT", outX + ENC_SIZE / 2, outY + ENC_SIZE + 12);
-            ctx.restore();
-
-            // Arrows: frames → encoder → tokens → probe → output
-            var fR = L.ctxFrames.x + L.ctxFrames.w - 14;
-            drawArrow(fR + gap, midY, encX - gap, midY, "#4488AA", t);
-            drawArrow(encX + ENC_SIZE + gap, midY, L.ctxTokens.x - gridPad, midY, "#4488AA", t);
-            drawArrow(L.ctxTokens.x + L.ctxTokens.w + 15 + gap, midY, probeX - gap, midY, "rgb(0, 246, 255)", t);
-            drawArrow(probeX + ENC_SIZE + gap, midY, outX - gap, midY, "#FF00FF", t);
 
           }
 
